@@ -15,7 +15,7 @@ SECRET_KEY = env("SECRET_KEY", cast=str)
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = (env("DEBUG", cast=bool),)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["127.0.0.1", "0.0.0.0"]
 
 
 # Application definition
@@ -70,7 +70,7 @@ DATABASES = {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": env("DB_NAME", cast=str),
         "USER": env("DB_USER", cast=str),
-        "PASSWORD": env("DB_PASSWORD", cast=str),
+        "PASSWORD": env("DB_PASSWD", cast=str),
         "HOST": env("DB_HOST", cast=str),
         "PORT": env("DB_PORT", cast=str),
     }
