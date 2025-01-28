@@ -1,0 +1,14 @@
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
+extend-select = [
+    "E501", # Add the `line-too-long` rule to the enforced rule set.
+    "DJ", # Add django flake8 rule set
+    "SIM", # Add flake8 simplidy rule set
+]
+ignore = ["DJ008",]
+
+[tool.ruff.format]
+quote-style = "double"
