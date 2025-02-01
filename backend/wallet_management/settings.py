@@ -20,6 +20,14 @@ ALLOWED_HOSTS = ["127.0.0.1", "0.0.0.0"]
 
 # Application definition
 
+LOCAL_APPS = ["authentication"]
+
+
+THIRD_PARTY_APPS = [
+    "rest_framework",
+    "rest_framework_simplejwt",
+]
+
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -27,9 +35,10 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "rest_framework",
-    "rest_framework_simplejwt",
+    *THIRD_PARTY_APPS,
+    *LOCAL_APPS,
 ]
+
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -122,3 +131,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": ("rest_framework_simplejwt.authentication.JWTAuthentication",),
 }
+
+
+PHONENUMBER_DEFAULT_REGION = "BR"
+AUTH_USER_MODEL = "authentication.User"
