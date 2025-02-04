@@ -16,15 +16,17 @@ class Profile(models.Model):
 class UserManager(BaseUserManager):
     @transaction.atomic
     def _create_user(self, cpf: str, email: str, password: str, **extra_fields):
-        if extra_fields.get("admin"):
+        is_admin = extra_fields.pop("admin")
+        if is_admin:
             extra_fields.setdefault("is_staff", True)
             extra_fields.setdefault("is_superuser", True)
 
         email = self.normalize_email(email)
         user = self.model(cpf=cpf, email=email, **extra_fields)
+        profile = Profile(user=user)
         user.password = make_password(password)
         user.save(using=self._db)
-        Profile.objects.create(user)
+        profile.save()
         return user
 
     def create_user(self, cpf: str, email: str, password: str, **extra_fields):
@@ -40,7 +42,7 @@ class UserManager(BaseUserManager):
         return self._create_user(cpf, email, password, **extra_fields)
 
     def create_superuser(self, cpf: str, email: str, password: str, admin=True, **extra_fields):
-        return self._create_user(cpf, email, password, admin, **extra_fields)
+        return self._create_user(cpf, email, password, admin=admin, **extra_fields)
 
 
 class User(AbstractBaseUser, PermissionsMixin):
