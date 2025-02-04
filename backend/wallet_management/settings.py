@@ -26,6 +26,7 @@ LOCAL_APPS = ["authentication"]
 THIRD_PARTY_APPS = [
     "rest_framework",
     "rest_framework_simplejwt",
+    "django_extensions",
 ]
 
 INSTALLED_APPS = [
@@ -127,11 +128,7 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-
-REST_FRAMEWORK = {
-    "DEFAULT_AUTHENTICATION_CLASSES": ("rest_framework_simplejwt.authentication.JWTAuthentication",),
-}
-
+from wallet_management.config.jwt import *  # noqa
+from wallet_management.config.rest_framework import *  # noqa
 
 PHONENUMBER_DEFAULT_REGION = "BR"
-AUTH_USER_MODEL = "authentication.User"
