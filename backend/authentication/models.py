@@ -1,3 +1,5 @@
+from typing import Any
+
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.contrib.auth.models import UserManager as BaseUserManager
@@ -13,9 +15,9 @@ class Profile(models.Model):
     phone_number = PhoneNumberField("phone number", blank=True)
 
 
-class UserManager(BaseUserManager):
+class UserManager(BaseUserManager["User"]):
     @transaction.atomic
-    def _create_user(self, cpf: str, email: str, password: str, **extra_fields):
+    def _create_user(self, cpf: str, email: str, password: str, **extra_fields: Any) -> "User":
         is_admin = extra_fields.pop("admin")
         if is_admin:
             extra_fields.setdefault("is_staff", True)
@@ -29,7 +31,7 @@ class UserManager(BaseUserManager):
         profile.save()
         return user
 
-    def create_user(self, cpf: str, email: str, password: str, **extra_fields):
+    def create_user(self, cpf: str, email: str, password: str, **extra_fields: Any) -> "User":  # type: ignore
         extra_fields.setdefault("is_staff", False)
         extra_fields.setdefault("is_superuser", False)
 
@@ -41,7 +43,7 @@ class UserManager(BaseUserManager):
 
         return self._create_user(cpf, email, password, **extra_fields)
 
-    def create_superuser(self, cpf: str, email: str, password: str, admin=True, **extra_fields):
+    def create_superuser(self, cpf: str, email: str, password: str, admin: bool = True, **extra_fields: Any) -> "User":  # type: ignore
         return self._create_user(cpf, email, password, admin=admin, **extra_fields)
 
 
@@ -63,7 +65,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         verbose_name_plural = "users"
 
     @property
-    def is_active(self) -> bool:
+    def is_active(self) -> bool:  # type: ignore
         if not self.profile:
             return False
-        return self.profile.preferred_name and self.profile.full_name
+        return bool(self.profile.preferred_name and self.profile.full_name)
