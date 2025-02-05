@@ -1,15 +1,16 @@
-[tool.ruff]
 line-length = 120
 exclude = ["backend/*/migrations/*.py"]
 
-[tool.ruff.lint]
-select = ["E", "F", "I"]
+[lint]
+select = ["E", "F", "I", "B"]
 extend-select = [
     "E501", # Add the `line-too-long` rule to the enforced rule set.
     "DJ", # Add django flake8 rule set
     "SIM", # Add flake8 simplidy rule set
+    "INT" #  wrong arguments for gettext
 ]
 ignore = ["DJ008",]
 
-[tool.ruff.format]
+[format]
 quote-style = "double"
+line-ending = "auto"
