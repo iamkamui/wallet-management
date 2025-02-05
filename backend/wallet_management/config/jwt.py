@@ -1,0 +1,11 @@
+from datetime import timedelta
+
+AUTH_USER_MODEL = "authentication.User"
+
+DEFAULT_TOKEN_LIFETIME = timedelta(weeks=1)
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": DEFAULT_TOKEN_LIFETIME,
+    "REFRESH_TOKEN_LIFETIME": DEFAULT_TOKEN_LIFETIME.__add__(DEFAULT_TOKEN_LIFETIME),
+    "UPDATE_LAST_LOGIN": True,
+}
