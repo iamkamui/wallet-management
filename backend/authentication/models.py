@@ -22,8 +22,8 @@ class UserManager(BaseUserManager):
             extra_fields.setdefault("is_superuser", True)
 
         email = self.normalize_email(email)
-        user = self.model(cpf=cpf, email=email, **extra_fields)
-        profile = Profile(user=user)
+        user = self.model(cpf=cpf, email=email)
+        profile = Profile(user=user, **extra_fields)
         user.password = make_password(password)
         user.save(using=self._db)
         profile.save()
