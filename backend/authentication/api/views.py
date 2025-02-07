@@ -11,7 +11,7 @@ from authentication.services import UserServices
 
 __all__ = ("UserViewSet",)
 
-ALLOW_ANY_ACTIONS = ["create"]
+ALLOW_ANY_ACTIONS = ["create_user"]
 
 
 class UserViewSet(viewsets.ViewSet):
@@ -39,4 +39,4 @@ class UserViewSet(viewsets.ViewSet):
         except Exception as exp:
             return Response(data=str(exp), status=status.HTTP_400_BAD_REQUEST)
 
-        return Response(data=serializer.validated_data, status=status.HTTP_201_CREATED)
+        return Response(data=serializer.data, status=status.HTTP_201_CREATED)

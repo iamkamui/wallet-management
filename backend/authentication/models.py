@@ -18,15 +18,20 @@ class Profile(models.Model):
 class UserManager(BaseUserManager["User"]):
     @transaction.atomic
     def _create_user(self, cpf: str, email: str, password: str, **extra_fields: Any) -> "User":
-        is_admin = extra_fields.pop("admin")
+        is_admin = extra_fields.get("admin")
         if is_admin:
             extra_fields.setdefault("is_staff", True)
             extra_fields.setdefault("is_superuser", True)
 
         email = self.normalize_email(email)
         user = self.model(cpf=cpf, email=email)
-        profile = Profile(user=user, **extra_fields)
         user.password = make_password(password)
+        profile = Profile(
+            preferred_name=extra_fields.get("preferred_name"),
+            full_name=extra_fields.get("full_name"),
+            phone_number=extra_fields.get("phone_number"),
+            user=user,
+        )
         user.save(using=self._db)
         profile.save()
         return user
