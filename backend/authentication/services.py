@@ -1,3 +1,5 @@
+from phonenumber_field.phonenumber import PhoneNumber
+
 from authentication.models import User
 
 
@@ -7,7 +9,7 @@ class UserServices:
 
     @classmethod
     def create_user(
-        cls, cpf: str, email: str, password: str, preferred_name: str, full_name: str, phone_number: str
+        cls, cpf: str, email: str, password: str, preferred_name: str, full_name: str, phone_number: PhoneNumber
     ) -> User:
         user = User.objects.create_user(
             cpf=cpf,
