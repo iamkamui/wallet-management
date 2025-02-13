@@ -7,6 +7,8 @@ from django.db import models, transaction
 from django.utils import timezone
 from phonenumber_field.modelfields import PhoneNumberField
 
+from authentication.validators import CPFValidator
+
 
 class Profile(models.Model):
     user = models.OneToOneField("User", verbose_name="User", related_name="profile", on_delete=models.CASCADE)
@@ -53,7 +55,7 @@ class UserManager(BaseUserManager["User"]):
 
 
 class User(AbstractBaseUser, PermissionsMixin):
-    cpf = models.CharField("cpf", max_length=11, blank=False, unique=True)  # TODO: Criar o validator do campo CPF
+    cpf = models.CharField("cpf", max_length=11, validators=[CPFValidator()], blank=False, unique=True)
     email = models.EmailField("email", max_length=254, unique=True, null=False)
     is_staff = models.BooleanField("staff status", default=False)
     date_joined = models.DateTimeField("date joined", default=timezone.now)
