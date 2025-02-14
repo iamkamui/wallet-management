@@ -7,7 +7,7 @@ class TestUserAPI(APITestCase):
     def setUp(self):
         self.endpoint = reverse("auth:user-create")
         self.payload = {
-            "cpf": "13625971712",
+            "cpf": "11144477735",
             "email": "admin@fakemail.com",
             "password": "F@kep4sswd",
             "preferred_name": "Admin",
@@ -18,7 +18,7 @@ class TestUserAPI(APITestCase):
     def test_create_user(self):
         response = self.client.post(self.endpoint, self.payload, format="json")
         expected_response = {
-            "cpf": "13625971712",
+            "cpf": "11144477735",
             "email": "admin@fakemail.com",
             "preferred_name": "Admin",
             "full_name": "Admin Test Wallet Management",
@@ -28,18 +28,28 @@ class TestUserAPI(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_create_user_invalid_cpf(self):
-        pass
+        self.payload["cpf"] = "00000000000"
+        response = self.client.post(self.endpoint, self.payload, format="json")
+        expected_response = {"cpf": ["Enter a valid CPF number."]}
+        self.assertEqual(response.json(), expected_response)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        
+        self.payload["cpf"] = "11144477712"
+        response = self.client.post(self.endpoint, self.payload, format="json")
+        expected_response = {"cpf": ["Enter a valid CPF number."]}
+        self.assertEqual(response.json(), expected_response)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_create_user_invalid_phone(self):
         self.payload["phone_number"] = "00000"
         response = self.client.post(self.endpoint, self.payload, format="json")
-        expected_response = {'phone_number': ['Enter a valid phone number.']}
+        expected_response = {"phone_number": ["Enter a valid phone number."]}
         self.assertEqual(response.json(), expected_response)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_create_user_invalid_email(self):
         self.payload["email"] = "adminwrongmail.com"
         response = self.client.post(self.endpoint, self.payload, format="json")
-        expected_response = {'email': ['Enter a valid email address.']}
+        expected_response = {"email": ["Enter a valid email address."]}
         self.assertEqual(response.json(), expected_response)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)

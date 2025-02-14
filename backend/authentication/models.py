@@ -28,13 +28,20 @@ class UserManager(BaseUserManager["User"]):
         email = self.normalize_email(email)
         user = self.model(cpf=cpf, email=email)
         user.password = make_password(password)
+
+        user.full_clean()
+        user.save(using=self._db)
+
+        user.refresh_from_db()
+
         profile = Profile(
             preferred_name=extra_fields.get("preferred_name"),
             full_name=extra_fields.get("full_name"),
             phone_number=extra_fields.get("phone_number"),
             user=user,
         )
-        user.save(using=self._db)
+
+        profile.full_clean()
         profile.save()
         return user
 
