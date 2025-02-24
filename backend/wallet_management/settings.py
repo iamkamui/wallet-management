@@ -20,7 +20,10 @@ ALLOWED_HOSTS = ["127.0.0.1", "0.0.0.0"]
 
 # Application definition
 
-LOCAL_APPS = ["authentication"]
+LOCAL_APPS = [
+    "authentication",
+    "transaction",
+]
 
 
 THIRD_PARTY_APPS = [
