@@ -12,6 +12,7 @@ services:
     volumes:
       - ./backend:/usr/src/backend
   database:
+    container_name: wallet-management-database
     image: postgres:latest
     ports:
       - "5432:5432"

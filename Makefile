@@ -9,3 +9,9 @@ superuser:
 
 show_urls:
 	docker compose run --rm backend python manage.py show_urls
+
+test_all:
+	docker compose run --rm backend python manage.py test
+
+shell_plus:
+	docker compose run --rm backend python manage.py shell_plus
