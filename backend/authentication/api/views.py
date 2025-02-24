@@ -30,9 +30,7 @@ class UserViewSet(viewsets.ViewSet):
     @action(methods=["post"], detail=False, url_name="create", url_path="create")
     def create_user(self, request: Request) -> Response:
         serializer = self.serializer_class(data=request.data)
-
-        if not serializer.is_valid(raise_exception=True):
-            return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.is_valid(raise_exception=True)
 
         try:
             self.service.create_user(**serializer.validated_data)
