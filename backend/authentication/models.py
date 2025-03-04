@@ -34,15 +34,16 @@ class UserManager(BaseUserManager["User"]):
 
         user.refresh_from_db()
 
-        profile = Profile(
-            preferred_name=extra_fields.get("preferred_name"),
-            full_name=extra_fields.get("full_name"),
-            phone_number=extra_fields.get("phone_number"),
-            user=user,
-        )
+        if not is_admin:
+            profile = Profile(
+                preferred_name=extra_fields.get("preferred_name"),
+                full_name=extra_fields.get("full_name"),
+                phone_number=extra_fields.get("phone_number"),
+                user=user,
+            )
 
-        profile.full_clean()
-        profile.save()
+            profile.full_clean()
+            profile.save()
         return user
 
     def create_user(self, cpf: str, email: str, password: str, **extra_fields: Any) -> "User":  # type: ignore

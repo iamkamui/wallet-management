@@ -20,5 +20,13 @@ from django.urls import include, path
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("api/", include([path("auth/", include(("authentication.api.routers", "authentication"), "auth"))])),
+    path(
+        "api/",
+        include(
+            [
+                path("auth/", include(("authentication.api.routers", "authentication"), "auth")),
+                path("transaction/", include(("transaction.api.routers", "transaction"), "wallet")),
+            ]
+        ),
+    ),
 ]
