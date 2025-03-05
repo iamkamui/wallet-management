@@ -24,9 +24,7 @@ class TransactionViewSet(viewsets.ViewSet):
     )
     def check_balance(self, request: Request, pk: str) -> Response:
         wallet = self.service.get_wallet(pk)
-        if not wallet:
-            return Response({"wallet": "The wallet number entered is not valid."}, status=status.HTTP_400_BAD_REQUEST)
 
-        wallet_serializer = self.wallet_serializer_class(**{"number": wallet.pk, "balance": wallet.balance})
+        wallet_serializer = self.wallet_serializer_class(wallet)
 
         return Response(data=wallet_serializer.data, status=status.HTTP_200_OK)

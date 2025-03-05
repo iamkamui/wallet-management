@@ -11,5 +11,8 @@ class TransactionServices:
 
     @staticmethod
     def get_wallet(wallet_pk: str) -> Wallet | None:
-        wallet = Wallet.objects.get(pk=wallet_pk)
+        try:
+            wallet = Wallet.objects.get(pk=wallet_pk)
+        except Wallet.DoesNotExist:
+            return None
         return wallet
