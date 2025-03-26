@@ -21,25 +21,31 @@ class Wallet(models.Model):
 
     @staticmethod
     def generate_wallet_number(user: User) -> str:
-        current_year = str(timezone.now().year)
-        str_user_id = str(user.pk)
+        time = str(timezone.now().strftime("%M%S"))
+        day_and_month = str(timezone.now().strftime("%-m%-d"))
+        year = str(timezone.now().strftime("%y"))
+        lenght_diference = 12 - len(time + day_and_month + year)
+        user_cpf_last_digits = user.cpf.replace("-", "")[-lenght_diference:]
 
-        if len(str_user_id) > 8:
-            str_user_id = str_user_id[:8]
-
-        if len(str_user_id) < 8:
-            str_user_id = f"{str_user_id}{'0' * (8 - len(str_user_id))}"
-
-        wallet_number = f"{str_user_id}{current_year}"
+        wallet_number = f"{year}{time}{day_and_month}{user_cpf_last_digits}"
         return wallet_number
 
 
 class Transaction(models.Model):
     from_wallet = models.ForeignKey(
-        Wallet, verbose_name="origin wallet", on_delete=models.CASCADE, related_name="sent_transactions"
+        Wallet,
+        verbose_name="origin wallet",
+        on_delete=models.CASCADE,
+        related_name="sent_transactions",
+        null=True,
+        blank=True,
     )
     to_wallet = models.ForeignKey(
-        Wallet, verbose_name="destination wallet", on_delete=models.CASCADE, related_name="received_transactions"
+        Wallet,
+        verbose_name="destination wallet",
+        on_delete=models.CASCADE,
+        related_name="received_transactions",
+        null=False,
     )
     amount = models.DecimalField("transaction amount", max_digits=10, decimal_places=2, default=0)
     status = models.CharField(

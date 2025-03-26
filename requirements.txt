@@ -14,3 +14,5 @@ ruff==0.9.3
 pre-commit==4.1.0
 typing-extensions==4.12.2
 ipdb==0.13.13
+factory_boy==3.3.3
+Faker==37.0.0

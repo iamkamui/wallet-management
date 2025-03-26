@@ -4,6 +4,9 @@ migrate:
 migrations:
 	docker compose run --rm backend python manage.py makemigrations $(app)
 
+showmigrations:
+	docker compose run --rm backend python manage.py showmigrations
+
 superuser:
 	docker compose run --rm backend python manage.py createsuperuser
 
