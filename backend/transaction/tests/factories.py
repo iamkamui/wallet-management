@@ -36,9 +36,8 @@ class WalletFactory(factory.django.DjangoModelFactory):
     number = factory.LazyAttribute(lambda _self: Wallet.generate_wallet_number(_self.user))
     user = factory.SubFactory(UserFactory)
     balance = factory.LazyAttribute(
-        lambda _: faker.pyfloat(positive=True, left_digits=faker.pyint(max_value=8), right_digits=2, min_value=0.1)
+        lambda _: faker.pydecimal(positive=True, left_digits=faker.pyint(max_value=8), right_digits=2, min_value=0.1)
     )
-
 
 class TransactionFactory(factory.django.DjangoModelFactory):
     class Meta:
