@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 from transaction.services import TransactionServices
 
 
-class IsAdminOrWalletOwner(BasePermission):  # type: ignore
+class IsAdminOrWalletOwner(BasePermission):
     service = TransactionServices
     message = "You are not the owner of this wallet."
 
@@ -27,12 +27,14 @@ class IsWalletOwner(BasePermission):
     message = "You are not the owner of this wallet."
 
     def has_permission(self, request: Request, view: APIView) -> bool:
-        wallet_pk = view.kwargs.get("pk") or request.data["to_wallet"]["number"]
+        wallet_pk = view.kwargs.get("pk") or request.data["from_wallet"]["number"]
         if not wallet_pk:
+            self.message = "Can not find this wallet number."
             return False
 
         if isinstance(request.user, AnonymousUser):
             return False
 
         wallet = self.service.get_wallet(wallet_pk=wallet_pk)
+
         return bool(wallet.user == request.user) if wallet else False
