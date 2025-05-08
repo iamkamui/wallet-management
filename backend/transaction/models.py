@@ -57,6 +57,6 @@ class Transaction(models.Model):
         constraints = [
             models.CheckConstraint(
                 name="%(app_label)s_%(class)s_status_valid",
-                check=models.Q(status__in=TransactionStatus.values),
+                condition=models.Q(status__in=TransactionStatus.values),
             )
         ]

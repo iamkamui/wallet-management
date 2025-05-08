@@ -5,7 +5,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 
-from transaction.api.permissions import IsAdminOrWalletOwner
+from transaction.api.permissions import IsAdminOrWalletOwner, IsWalletOwner
 from transaction.api.serializers import TransactionSerializer, WalletSerializer
 from transaction.models import Transaction
 from transaction.services import TransactionServices
@@ -39,7 +39,7 @@ class TransactionViewSet(viewsets.ViewSet):
         if hasattr(serializer.validated_data, "from_wallet"):
             _data.update({"from_wallet": self.service.get_wallet(serializer.validated_data["from_wallet"]["number"])})
 
-        service = self.service(**_data)  # type: ignore
+        service = self.service(**_data)
         try:
             deposit_transaction = service.deposit()
         except ValidationError as exc:
@@ -58,3 +58,24 @@ class TransactionViewSet(viewsets.ViewSet):
         transaction_serializer = self.serializer_class(Transaction(**response_data))
 
         return Response(data=transaction_serializer.data, status=status.HTTP_200_OK)
+
+    @action(methods=["post"], detail=False, permission_classes=[IsAuthenticated, IsWalletOwner])
+    def transfer(self, request: Request) -> Response:
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        user = request.user
+        from_wallet = self.service.get_wallet(serializer.validated_data["from_wallet"]["number"])
+        to_wallet = self.service.get_wallet(serializer.validated_data["to_wallet"]["number"])
+        amount = serializer.validated_data["amount"]
+
+        service = self.service(user, to_wallet, from_wallet, amount)  # type: ignore
+
+        try:
+            transfer_transaction = service.transfer()
+        except ValidationError as exc:
+            return Response(data=exc, status=status.HTTP_400_BAD_REQUEST)
+
+        response_serializer = self.serializer_class(transfer_transaction)
+
+        return Response(data=response_serializer.data, status=status.HTTP_200_OK)

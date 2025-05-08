@@ -17,7 +17,7 @@ class Profile(models.Model):
     phone_number = PhoneNumberField("phone number", blank=True)
 
 
-class UserManager(BaseUserManager["User"]):
+class UserManager(BaseUserManager["User"]):  # type: ignore
     @transaction.atomic
     def _create_user(self, cpf: str, email: str, password: str, **extra_fields: Any) -> "User":
         is_admin = extra_fields.get("admin")
@@ -35,12 +35,11 @@ class UserManager(BaseUserManager["User"]):
         user.refresh_from_db()
 
         if not is_admin:
-            profile = Profile(
-                preferred_name=extra_fields.get("preferred_name"),
-                full_name=extra_fields.get("full_name"),
-                phone_number=extra_fields.get("phone_number"),
-                user=user,
-            )
+            preferred_name = extra_fields["preferred_name"]
+            full_name = extra_fields["full_name"]
+            phone_number = extra_fields["phone_number"]
+
+            profile = Profile(preferred_name=preferred_name, full_name=full_name, phone_number=phone_number, user=user)
 
             profile.full_clean()
             profile.save()
