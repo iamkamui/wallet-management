@@ -39,7 +39,7 @@ class TransactionViewSet(viewsets.ViewSet):
         if hasattr(serializer.validated_data, "from_wallet"):
             _data.update({"from_wallet": self.service.get_wallet(serializer.validated_data["from_wallet"]["number"])})
 
-        service = self.service(**_data)  # type: ignore
+        service = self.service(**_data)
         try:
             deposit_transaction = service.deposit()
         except ValidationError as exc:
@@ -59,14 +59,14 @@ class TransactionViewSet(viewsets.ViewSet):
 
         return Response(data=transaction_serializer.data, status=status.HTTP_200_OK)
 
-    @action(methods=["post"], detail=False, permission_classes=[IsWalletOwner, IsAuthenticated])
+    @action(methods=["post"], detail=False, permission_classes=[IsAuthenticated, IsWalletOwner])
     def transfer(self, request: Request) -> Response:
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
 
         user = request.user
-        from_wallet = serializer.validated_data["from_wallet"]["number"]
-        to_wallet = serializer.validated_data["to_wallet"]["number"]
+        from_wallet = self.service.get_wallet(serializer.validated_data["from_wallet"]["number"])
+        to_wallet = self.service.get_wallet(serializer.validated_data["to_wallet"]["number"])
         amount = serializer.validated_data["amount"]
 
         service = self.service(user, to_wallet, from_wallet, amount)  # type: ignore
