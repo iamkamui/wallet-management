@@ -56,7 +56,15 @@ class TransactionServices:
         return self.transaction
 
     def transfer(self) -> Transaction:
+        if self.transaction.amount <= 0:
+            self.transaction.status = TransactionStatus.FAILURE
+            self.transaction.save()
+            raise ValidationError("The amount value can not be less or equal 0")
+
         if not self.transaction.from_wallet:
+            self.transaction.status = TransactionStatus.FAILURE
+            self.transaction.full_clean()
+            self.transaction.save()
             raise ValidationError("Transfer transaction can not be perform without from wallet")
 
         wallet_balance = self.transaction.from_wallet.balance
@@ -68,11 +76,12 @@ class TransactionServices:
             raise ValidationError("Not enouth balance on wallet to transfer")
 
         try:
-            self.transaction.from_wallet.balance -= self.transaction.amount
+            self.transaction.from_wallet.balance -= Decimal(self.transaction.amount).quantize(Decimal("0.01"))
             self.transaction.from_wallet.full_clean()
             self.transaction.from_wallet.save()
 
-            self.transaction.to_wallet.balance += self.transaction.amount
+            new_wallet_balance = self.transaction.amount + self.transaction.to_wallet.balance
+            self.transaction.to_wallet.balance = Decimal(new_wallet_balance).quantize(Decimal("0.01"))
             self.transaction.to_wallet.full_clean()
             self.transaction.to_wallet.save()
 
