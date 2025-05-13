@@ -28,3 +28,9 @@ class TransactionSerializer(serializers.Serializer[Transaction]):
         ret = super().to_representation(instance)
         del ret["to_wallet"]["balance"]
         return ret
+
+
+class TransactionFilterSerializer(serializers.Serializer[Transaction]):
+    wallet = WalletSerializer(required=True)
+    start_date = serializers.DateField(required=False)
+    end_date = serializers.DateField(required=False)
