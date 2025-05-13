@@ -30,6 +30,7 @@ THIRD_PARTY_APPS = [
     "rest_framework",
     "rest_framework_simplejwt",
     "django_extensions",
+    "django_filters",
 ]
 
 INSTALLED_APPS = [
@@ -115,6 +116,8 @@ AUTH_PASSWORD_VALIDATORS = [
 LANGUAGE_CODE = "en-us"
 
 TIME_ZONE = "America/Sao_Paulo"
+
+DATE_INPUT_FORMATS = ["%d-%m-%Y", "%d/%m/%Y"]
 
 USE_I18N = True
 
