@@ -1,13 +1,18 @@
 from decimal import Decimal
+from typing import Any
 
 from authentication.models import User
 from django.core.exceptions import ValidationError
+from django.db.models import QuerySet
 
 from transaction.enums import TransactionStatus
+from transaction.filters import TransactionFilter
 from transaction.models import Transaction, Wallet
 
 
 class TransactionServices:
+    model = Transaction
+
     def __init__(self, user: User, to_wallet: Wallet, from_wallet: Wallet | None = None, amount: int = 0) -> None:
         self._user = user
         self._from_wallet = from_wallet
@@ -23,7 +28,7 @@ class TransactionServices:
         if not from_wallet:
             del transaction_data["from_wallet"]
 
-        transaction = Transaction.objects.create(**transaction_data)
+        transaction = self.model.objects.create(**transaction_data)
         return transaction
 
     @staticmethod
@@ -94,3 +99,9 @@ class TransactionServices:
             self.transaction.save()
 
         return self.transaction
+
+    @classmethod
+    def transaction_list(cls, filters: None | dict[str, Any] = None) -> QuerySet[Transaction] | Any:
+        filters = filters or {}
+        queryset = cls.model.objects.all()
+        return TransactionFilter(filters, queryset).qs
