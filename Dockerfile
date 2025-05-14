@@ -1,4 +1,5 @@
 FROM python:latest
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
 # This prevents Python from writing out pyc files
 ENV PYTHONDONTWRITEBYTECODE=1
@@ -6,7 +7,9 @@ ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
 WORKDIR /usr/src/backend
-COPY requirements.txt ${WORKDIR}
-RUN apt-get update \
-    && pip install --upgrade pip \
-    && pip install -r requirements.txt
+
+COPY . /usr/src
+
+ENV PATH="/usr/src/.venv/bin:$PATH"
+
+RUN uv sync --locked
