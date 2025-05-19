@@ -103,5 +103,8 @@ class TransactionServices:
     @classmethod
     def transaction_list(cls, filters: None | dict[str, Any] = None) -> QuerySet[Transaction] | Any:
         filters = filters or {}
+        if filters != {} and "wallet" in filters and isinstance(filters["wallet"], Wallet):
+            filters["wallet"] = filters["wallet"].number
+
         queryset = cls.model.objects.all()
         return TransactionFilter(filters, queryset).qs
