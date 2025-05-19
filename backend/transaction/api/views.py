@@ -1,5 +1,5 @@
 from django.core.exceptions import ValidationError
-from rest_framework import status, viewsets
+from rest_framework import exceptions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
@@ -31,14 +31,17 @@ class TransactionViewSet(viewsets.ViewSet):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
 
+        if "from_wallet" in serializer.validated_data:
+            raise exceptions.ParseError(
+                "Field 'from_wallet' is not allowed on deposit. Use /transfer endpoint to transfer beetween wallets",
+                code="invalid_field",
+            )
+
         _data = {
             "user": request.user,
             "to_wallet": self.service.get_wallet(serializer.validated_data["to_wallet"]["number"]),
             "amount": serializer.validated_data["amount"],
         }
-
-        if hasattr(serializer.validated_data, "from_wallet"):
-            _data.update({"from_wallet": self.service.get_wallet(serializer.validated_data["from_wallet"]["number"])})
 
         service = self.service(**_data)
         try:
@@ -53,10 +56,9 @@ class TransactionViewSet(viewsets.ViewSet):
             "status": deposit_transaction.status,
         }
 
-        if deposit_transaction.from_wallet is not None:
-            response_data.update({"from_wallet": {"number": deposit_transaction.from_wallet.pk}})
-
         transaction_serializer = self.serializer_class(Transaction(**response_data))
+        response_data = transaction_serializer.data
+        del response_data["to_wallet"]["balance"]
 
         return Response(data=transaction_serializer.data, status=status.HTTP_200_OK)
 
