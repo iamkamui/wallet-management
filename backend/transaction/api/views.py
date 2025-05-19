@@ -6,13 +6,14 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 
 from transaction.api.permissions import IsAdminOrWalletOwner, IsWalletOwner
-from transaction.api.serializers import TransactionSerializer, WalletSerializer
+from transaction.api.serializers import TransactionFilterSerializer, TransactionSerializer, WalletSerializer
 from transaction.models import Transaction
 from transaction.services import TransactionServices
 
 
 class TransactionViewSet(viewsets.ViewSet):
     serializer_class = TransactionSerializer
+    filter_serializer_class = TransactionFilterSerializer
     wallet_serializer_class = WalletSerializer
     service = TransactionServices
     permission_classes = [IsAuthenticated, IsAdminOrWalletOwner]
@@ -79,3 +80,16 @@ class TransactionViewSet(viewsets.ViewSet):
         response_serializer = self.serializer_class(transfer_transaction)
 
         return Response(data=response_serializer.data, status=status.HTTP_200_OK)
+
+    @action(methods=["get"], detail=False, permission_classes=[IsAuthenticated, IsWalletOwner], url_path="list")
+    def transaction_list(self, request: Request) -> Response:
+        filter_serializer = self.filter_serializer_class(data=request.query_params)
+        filter_serializer.is_valid(raise_exception=True)
+
+        transactions = self.service.transaction_list(filter_serializer.validated_data)
+        serializer = self.serializer_class(transactions, many=True)
+        for transaction in serializer.data:
+            del transaction["to_wallet"]["balance"]
+            if "from_wallet" in transaction and transaction["from_wallet"] is not None:
+                del transaction["from_wallet"]["balance"]
+        return Response(data=serializer.data, status=status.HTTP_200_OK)

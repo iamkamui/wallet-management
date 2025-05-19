@@ -2,10 +2,11 @@ import unittest
 from decimal import Decimal
 
 from django.core.exceptions import ValidationError
+from django.utils import timezone
 
 from transaction.enums import TransactionStatus
 from transaction.services import TransactionServices
-from transaction.tests.factories import WalletFactory
+from transaction.tests.factories import TransactionFactory, UserFactory, WalletFactory, faker
 
 
 class TestTransactionServiceDeposit(unittest.TestCase):
@@ -76,3 +77,78 @@ class TestTransactionServiceTransfer(unittest.TestCase):
         self.assertEqual(transaction.status, TransactionStatus.SETTLED)
         self.assertEqual(service._to_wallet.balance, Decimal(to_wallet_balance + 150).quantize(Decimal("1.01")))
         self.assertEqual(service._from_wallet.balance, Decimal(from_wallet_balance - 150).quantize(Decimal("1.01")))
+
+
+class TestTransactionList(unittest.TestCase):
+    def setUp(self):
+        self.user = UserFactory.create()
+        self.user_wallet = WalletFactory.create(user=self.user)
+        self.transaction_service = TransactionServices
+
+        # All transactions created by factory is on current year with randoms months and days
+        self.wallet_receive_transactions = [
+            TransactionFactory.create(
+                to_wallet=self.user_wallet, with_from_wallet=True, status=TransactionStatus.SETTLED
+            )
+            for _ in range(3)
+        ]
+        self.wallet_sent_transactions = [
+            TransactionFactory.create(
+                from_wallet=self.user_wallet, requested_by=self.user, status=TransactionStatus.SETTLED
+            )
+            for _ in range(3)
+        ]
+
+        self.unrelated_transactions = [TransactionFactory.create() for _ in range(5)]
+
+    def test_list_all_transaction(self):
+        filters = {
+            "wallet": self.user_wallet.number,
+            "start_date": timezone.now().replace(day=1, month=1).date(),
+            "end_date": timezone.now().date(),
+        }
+        transaction_list = self.transaction_service.transaction_list(filters)
+
+        self.assertEqual(transaction_list.count(), 6)
+        for transaction in transaction_list:
+            self.assertTrue(transaction.from_wallet == self.user_wallet or transaction.to_wallet == self.user_wallet)
+
+    def test_list_transaction_with_date_range(self):
+        start_date = timezone.now().replace(day=1, month=1, year=timezone.now().year - 1).date()
+        end_date = timezone.now().replace(day=31, month=12, year=timezone.now().year - 1).date()
+
+        filters = {
+            "wallet": self.user_wallet.number,
+            "start_date": start_date,
+        }
+
+        for _ in range(10):
+            TransactionFactory.create(
+                to_wallet=self.user_wallet,
+                with_from_wallet=True,
+                status=TransactionStatus.SETTLED,
+                created_at=faker.date_time_between_dates(start_date, end_date, tzinfo=timezone.get_current_timezone()),
+            )
+        transaction_list = self.transaction_service.transaction_list(filters)
+
+        self.assertEqual(transaction_list.count(), 16)
+        for transaction in transaction_list:
+            self.assertTrue(transaction.from_wallet == self.user_wallet or transaction.to_wallet == self.user_wallet)
+
+        filters["end_date"] = end_date
+
+        new_transaction_list = self.transaction_service.transaction_list(filters)
+
+        self.assertEqual(new_transaction_list.count(), 10)
+        for transaction in new_transaction_list:
+            self.assertTrue(transaction.from_wallet == self.user_wallet or transaction.to_wallet == self.user_wallet)
+
+    def test_list_transactions_with_no_results(self):
+        filters = {
+            "wallet": self.user_wallet.number,
+            "start_date": timezone.now().replace(year=timezone.now().year + 1).date(),
+            "end_date": timezone.now().date(),
+        }
+        transaction_list = self.transaction_service.transaction_list(filters)
+
+        self.assertEqual(transaction_list.count(), 0)

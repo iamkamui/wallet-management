@@ -21,14 +21,15 @@ class Wallet(models.Model):
 
     @staticmethod
     def generate_wallet_number(user: User) -> str:
-        time = str(timezone.now().strftime("%M%S"))
-        day_and_month = str(timezone.now().strftime("%-m%-d"))
+        wallet_max_length = 12
         year = str(timezone.now().strftime("%y"))
-        lenght_diference = 12 - len(time + day_and_month + year)
+        timestamp = str(timezone.now().timestamp()).replace(".", "")
+        lenght_diference = wallet_max_length - len(timestamp)
         user_cpf_last_digits = user.cpf.replace("-", "")[-lenght_diference:]
 
-        wallet_number = f"{year}{time}{day_and_month}{user_cpf_last_digits}"
-        return wallet_number
+        wallet_number = f"{year}{user_cpf_last_digits}{timestamp}"
+
+        return wallet_number[:wallet_max_length]
 
 
 class Transaction(models.Model):
@@ -52,6 +53,7 @@ class Transaction(models.Model):
         "transaction status", max_length=3, choices=TransactionStatus, default=TransactionStatus.PENDING
     )
     requested_by = models.ForeignKey(User, verbose_name="who realized", on_delete=models.CASCADE)
+    created_at = models.DateTimeField("date joined", default=timezone.now)
 
     class Meta:
         constraints = [

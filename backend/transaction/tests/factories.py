@@ -2,6 +2,7 @@ import re
 
 import factory
 from authentication.models import Profile, User
+from django.utils import timezone
 from wallet_management.utils.tests.base import faker
 
 from transaction.models import Transaction, Wallet
@@ -48,6 +49,9 @@ class TransactionFactory(factory.django.DjangoModelFactory):
         lambda _: faker.pyfloat(positive=True, left_digits=faker.pyint(max_value=8), right_digits=2, min_value=0.1)
     )
     requested_by = factory.SubFactory(UserFactory)
+    created_at = factory.LazyAttribute(
+        lambda _: faker.date_time_this_year(after_now=False, tzinfo=timezone.get_current_timezone())
+    )
 
     class Params:
         with_from_wallet = factory.Trait(from_wallet=factory.SubFactory(WalletFactory))
