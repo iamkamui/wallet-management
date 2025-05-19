@@ -1,32 +1,39 @@
 from django.core.exceptions import ValidationError
 from rest_framework import exceptions, status, viewsets
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 
-from transaction.api.permissions import IsAdminOrWalletOwner, IsWalletOwner
+from transaction.api.permissions import IsWalletOwner
 from transaction.api.serializers import TransactionFilterSerializer, TransactionSerializer, WalletSerializer
-from transaction.models import Transaction
 from transaction.services import TransactionServices
 
 
 class TransactionViewSet(viewsets.ViewSet):
     serializer_class = TransactionSerializer
     filter_serializer_class = TransactionFilterSerializer
-    wallet_serializer_class = WalletSerializer
     service = TransactionServices
-    permission_classes = [IsAuthenticated, IsAdminOrWalletOwner]
 
-    @action(methods=["get"], detail=True, url_name="check-balance", url_path="check_balance")
-    def check_balance(self, request: Request, pk: str) -> Response:
-        wallet = self.service.get_wallet(pk)
+    @action(
+        methods=["get"],
+        detail=False,
+        url_name="check-balance",
+        url_path="check_balance",
+        permission_classes=[IsAuthenticated, IsWalletOwner],
+    )
+    def check_balance(self, request: Request) -> Response:
+        wallet_serializer = WalletSerializer(data=request.query_params)
+        wallet_serializer.is_valid(raise_exception=True)
+        wallet_pk = wallet_serializer.validated_data["wallet"]
 
-        wallet_serializer = self.wallet_serializer_class(wallet)
+        wallet = self.service.get_wallet(wallet_pk)
 
-        return Response(data=wallet_serializer.data, status=status.HTTP_200_OK)
+        response_data = WalletSerializer(wallet).data
 
-    @action(methods=["post"], detail=False, url_name="deposit", url_path="deposit")
+        return Response(data=response_data, status=status.HTTP_200_OK)
+
+    @action(methods=["post"], detail=False, url_name="deposit", url_path="deposit", permission_classes=[AllowAny])
     def deposit(self, request: Request) -> Response:
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -39,7 +46,7 @@ class TransactionViewSet(viewsets.ViewSet):
 
         _data = {
             "user": request.user,
-            "to_wallet": self.service.get_wallet(serializer.validated_data["to_wallet"]["number"]),
+            "to_wallet": self.service.get_wallet(serializer.validated_data["to_wallet"]),
             "amount": serializer.validated_data["amount"],
         }
 
@@ -49,14 +56,7 @@ class TransactionViewSet(viewsets.ViewSet):
         except ValidationError as exc:
             return Response(data=exc, status=status.HTTP_400_BAD_REQUEST)
 
-        response_data = {
-            "requested_by": deposit_transaction.requested_by,
-            "to_wallet": deposit_transaction.to_wallet,
-            "amount": deposit_transaction.amount,
-            "status": deposit_transaction.status,
-        }
-
-        transaction_serializer = self.serializer_class(Transaction(**response_data))
+        transaction_serializer = self.serializer_class(deposit_transaction)
         response_data = transaction_serializer.data
         del response_data["to_wallet"]["balance"]
 
@@ -68,8 +68,8 @@ class TransactionViewSet(viewsets.ViewSet):
         serializer.is_valid(raise_exception=True)
 
         user = request.user
-        from_wallet = self.service.get_wallet(serializer.validated_data["from_wallet"]["number"])
-        to_wallet = self.service.get_wallet(serializer.validated_data["to_wallet"]["number"])
+        from_wallet = self.service.get_wallet(serializer.validated_data["from_wallet"])
+        to_wallet = self.service.get_wallet(serializer.validated_data["to_wallet"])
         amount = serializer.validated_data["amount"]
 
         service = self.service(user, to_wallet, from_wallet, amount)  # type: ignore
