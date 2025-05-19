@@ -79,7 +79,10 @@ class TransactionViewSet(viewsets.ViewSet):
 
         response_serializer = self.serializer_class(transfer_transaction)
 
-        return Response(data=response_serializer.data, status=status.HTTP_200_OK)
+        response_data = response_serializer.data
+        del response_data["to_wallet"]["balance"]
+
+        return Response(data=response_data, status=status.HTTP_200_OK)
 
     @action(methods=["get"], detail=False, permission_classes=[IsAuthenticated, IsWalletOwner], url_path="list")
     def transaction_list(self, request: Request) -> Response:
