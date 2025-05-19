@@ -51,7 +51,7 @@ class TestDepositEndpoint(APITestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json()[0], expected_response)
 
-    def test_deposit_with_from_wallet_raise_parse_error(self):
+    def test_deposit_with_from_wallet_return_400(self):
         self.client.force_authenticate(user=self.wallet.user)
         payload = {"from_wallet": {"number": self.wallet.pk}, "to_wallet": {"number": self.wallet.pk}, "amount": 500}
         response = self.client.post(self.endpoint, payload, format="json")
