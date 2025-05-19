@@ -18,11 +18,10 @@ class IsWalletOwner(BasePermission):
             wallet_pk = request.query_params["wallet"]
 
         if request.method == "POST":
-            if isinstance(request.data, dict) and "wallet" in request.data:
-                wallet_pk = request.data["wallet"]["number"]
+            wallet_pk = request.data.get("wallet") or request.data.get("from_wallet")  # type: ignore
 
-            if isinstance(request.data, dict) and "from_wallet" in request.data:
-                wallet_pk = request.data["from_wallet"]["number"]
+        if not wallet_pk:
+            return False
 
         wallet = self.service.get_wallet(wallet_pk=wallet_pk)
         return bool(wallet.user == request.user) if wallet else False

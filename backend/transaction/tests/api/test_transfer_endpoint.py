@@ -15,7 +15,7 @@ class TestTransferEndpoint(APITestCase):
     def test_transfer_authenticated_without_from_wallet_return_403(self):
         self.client.force_authenticate(user=self.from_wallet.user)
 
-        payload = {"amount": 500, "to_wallet": {"number": self.to_wallet.pk}, "from_wallet": {"number": None}}
+        payload = {"amount": 500, "to_wallet": self.to_wallet.pk, "from_wallet":  None}
         response = self.client.post(self.endpoint, payload, format="json")
 
         expected_response = "You are not the owner of this wallet."
@@ -29,8 +29,8 @@ class TestTransferEndpoint(APITestCase):
 
         payload = {
             "amount": 500,
-            "to_wallet": {"number": self.to_wallet.pk},
-            "from_wallet": {"number": self.from_wallet.pk},
+            "to_wallet": self.to_wallet.pk,
+            "from_wallet": self.from_wallet.pk,
         }
         response = self.client.post(self.endpoint, payload, format="json")
 
@@ -44,8 +44,8 @@ class TestTransferEndpoint(APITestCase):
 
         payload = {
             "amount": 1500,
-            "to_wallet": {"number": self.to_wallet.pk},
-            "from_wallet": {"number": self.from_wallet.pk},
+            "to_wallet": self.to_wallet.pk,
+            "from_wallet": self.from_wallet.pk,
         }
         response = self.client.post(self.endpoint, payload, format="json")
 
@@ -59,12 +59,12 @@ class TestTransferEndpoint(APITestCase):
 
         payload = {
             "amount": 1500,
-            "to_wallet": {"number": "000000000012"},
-            "from_wallet": {"number": self.from_wallet.pk},
+            "to_wallet": "000000000012",
+            "from_wallet": self.from_wallet.pk,
         }
         response = self.client.post(self.endpoint, payload, format="json")
 
-        expected_response = {"to_wallet": {"number": ["This wallet number is not valid."]}}
+        expected_response = {"to_wallet": ["This wallet number is not valid."]}
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.json(), expected_response)
@@ -74,8 +74,8 @@ class TestTransferEndpoint(APITestCase):
 
         payload = {
             "amount": 0,
-            "to_wallet": {"number": self.to_wallet.pk},
-            "from_wallet": {"number": self.from_wallet.pk},
+            "to_wallet": self.to_wallet.pk,
+            "from_wallet": self.from_wallet.pk,
         }
         response = self.client.post(self.endpoint, payload, format="json")
 
@@ -89,16 +89,16 @@ class TestTransferEndpoint(APITestCase):
 
         payload = {
             "amount": 200,
-            "to_wallet": {"number": self.to_wallet.pk},
-            "from_wallet": {"number": self.from_wallet.pk},
+            "to_wallet": self.to_wallet.pk,
+            "from_wallet": self.from_wallet.pk,
         }
 
         response = self.client.post(self.endpoint, payload, format="json")
         response_data = response.json()
 
         expected_response = {
-            "from_wallet": {"number": self.from_wallet.pk, "balance": "800.00"},
-            "to_wallet": {"number": self.to_wallet.pk},
+            "from_wallet": {"wallet": self.from_wallet.pk, "balance": "800.00"},
+            "to_wallet": {"wallet": self.to_wallet.pk},
             "amount": "200.00",
             "status": "003",
         }

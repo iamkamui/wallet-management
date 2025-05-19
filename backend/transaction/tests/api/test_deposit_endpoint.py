@@ -13,11 +13,11 @@ class TestDepositEndpoint(APITestCase):
 
     def test_deposit_positive_amount_updates_wallet_balance_return_200(self):
         self.client.force_authenticate(user=self.wallet.user)
-        payload = {"to_wallet": {"number": self.wallet.pk}, "amount": 500}
+        payload = {"to_wallet": self.wallet.pk, "amount": 500}
 
         expected_response = {
             "from_wallet": None,
-            "to_wallet": {"number": self.wallet.pk},
+            "to_wallet": {"wallet": self.wallet.pk},
             "amount": "500.00",
             "status": "003",
         }
@@ -33,7 +33,7 @@ class TestDepositEndpoint(APITestCase):
 
     def test_deposit_negative_amount_raise_validation_error_400(self):
         self.client.force_authenticate(user=self.wallet.user)
-        payload = {"to_wallet": {"number": self.wallet.pk}, "amount": -500}
+        payload = {"to_wallet": self.wallet.pk, "amount": -500}
 
         expected_response = "The amount value can not be less or equal 0"
         response = self.client.post(self.endpoint, payload, format="json")
@@ -43,7 +43,7 @@ class TestDepositEndpoint(APITestCase):
 
     def test_deposit_zero_raise_validation_error_400(self):
         self.client.force_authenticate(user=self.wallet.user)
-        payload = {"to_wallet": {"number": self.wallet.pk}, "amount": 0}
+        payload = {"to_wallet": self.wallet.pk, "amount": 0}
 
         expected_response = "The amount value can not be less or equal 0"
         response = self.client.post(self.endpoint, payload, format="json")
@@ -53,7 +53,7 @@ class TestDepositEndpoint(APITestCase):
 
     def test_deposit_with_from_wallet_return_400(self):
         self.client.force_authenticate(user=self.wallet.user)
-        payload = {"from_wallet": {"number": self.wallet.pk}, "to_wallet": {"number": self.wallet.pk}, "amount": 500}
+        payload = {"from_wallet": self.wallet.pk, "to_wallet": self.wallet.pk, "amount": 500}
         response = self.client.post(self.endpoint, payload, format="json")
         expected_response = {
             "detail": "Field 'from_wallet' is not allowed on deposit. Use /transfer endpoint to transfer beetween wallets"  # noqa: E501

@@ -27,10 +27,11 @@ class TestTransactionListEndpoint(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.json()), 10)
 
+
         for transaction in response.json():
             self.assertTrue(
-                transaction["from_wallet"]["number"] == self.wallet.pk
-                or transaction["to_wallet"]["number"] == self.wallet.pk
+                transaction["from_wallet"]["wallet"] == self.wallet.pk
+                or transaction["to_wallet"]["wallet"] == self.wallet.pk
             )
 
     def test_list_transaction_with_date_range_return_only_in_range(self):
@@ -58,8 +59,8 @@ class TestTransactionListEndpoint(APITestCase):
 
         for transaction in response.json():
             self.assertTrue(
-                transaction["from_wallet"]["number"] == self.wallet.pk
-                or transaction["to_wallet"]["number"] == self.wallet.pk
+                transaction["from_wallet"]["wallet"] == self.wallet.pk
+                or transaction["to_wallet"]["wallet"] == self.wallet.pk
             )
 
     def test_list_transaction_unauthenticated_return_401(self):
