@@ -25,7 +25,7 @@ urlpatterns = [
         include(
             [
                 path("auth/", include(("authentication.api.routers", "authentication"), "auth")),
-                path("transaction/", include(("transaction.api.routers", "transaction"), "transaction")),
+                path("", include(("transaction.api.routers", "transaction"), "transaction")),
             ]
         ),
     ),
