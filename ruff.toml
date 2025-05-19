@@ -9,7 +9,9 @@ extend-select = [
     "SIM", # Add flake8 simplidy rule set
     "INT" #  wrong arguments for gettext
 ]
-ignore = ["DJ008",]
+ignore = [
+    "DJ008", # Models do not define __str__ method
+]
 
 [format]
 quote-style = "double"
