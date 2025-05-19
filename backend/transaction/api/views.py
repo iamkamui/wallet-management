@@ -13,7 +13,6 @@ from transaction.services import TransactionServices
 class TransactionViewSet(viewsets.ViewSet):
     serializer_class = TransactionSerializer
     filter_serializer_class = TransactionFilterSerializer
-    wallet_serializer_class = WalletSerializer
     service = TransactionServices
 
     @action(
