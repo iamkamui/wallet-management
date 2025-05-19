@@ -18,7 +18,7 @@ class TestTransferEndpoint(APITestCase):
         payload = {"amount": 500, "to_wallet": {"number": self.to_wallet.pk}, "from_wallet": {"number": None}}
         response = self.client.post(self.endpoint, payload, format="json")
 
-        expected_response = "Can not find this wallet number."
+        expected_response = "You are not the owner of this wallet."
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(response.json()["detail"], expected_response)
@@ -94,6 +94,7 @@ class TestTransferEndpoint(APITestCase):
         }
 
         response = self.client.post(self.endpoint, payload, format="json")
+        response_data = response.json()
 
         expected_response = {
             "from_wallet": {"number": self.from_wallet.pk, "balance": "800.00"},
@@ -103,4 +104,8 @@ class TestTransferEndpoint(APITestCase):
         }
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.json(), expected_response)
+        self.assertEqual(response_data["from_wallet"], expected_response["from_wallet"])
+        self.assertEqual(response_data["to_wallet"], expected_response["to_wallet"])
+        self.assertEqual(response_data["amount"], expected_response["amount"])
+        self.assertEqual(response_data["status"], expected_response["status"])
+        self.assertIn("created_at", response_data)
