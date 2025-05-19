@@ -27,17 +27,18 @@ class IsWalletOwner(BasePermission):
     message = "You are not the owner of this wallet."
 
     def has_permission(self, request: Request, view: APIView) -> bool:
-        wallet_pk = view.kwargs.get("pk") or request.data["from_wallet"]["number"] or request.data.get("wallet")
-        if not wallet_pk:
-            self.message = "Can not find this wallet number."
-            return False
-
-        if isinstance(wallet_pk, dict):
-            wallet_pk = wallet_pk["number"]
-
         if isinstance(request.user, AnonymousUser):
             return False
 
-        wallet = self.service.get_wallet(wallet_pk=wallet_pk)
+        if request.method == "GET":
+            wallet_pk = request.query_params["wallet"]
 
+        if request.method == "POST":
+            if isinstance(request.data, dict) and "wallet" in request.data:
+                wallet_pk = request.data["wallet"]["number"]
+
+            if isinstance(request.data, dict) and "from_wallet" in request.data:
+                wallet_pk = request.data["from_wallet"]["number"]
+
+        wallet = self.service.get_wallet(wallet_pk=wallet_pk)
         return bool(wallet.user == request.user) if wallet else False
