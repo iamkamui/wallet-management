@@ -81,22 +81,15 @@ class TransactionViewSet(viewsets.ViewSet):
 
         return Response(data=response_serializer.data, status=status.HTTP_200_OK)
 
-    @action(methods=["get"], detail=False, permission_classes=[IsAuthenticated, IsWalletOwner])
+    @action(methods=["get"], detail=False, permission_classes=[IsAuthenticated, IsWalletOwner], url_path="list")
     def transaction_list(self, request: Request) -> Response:
-        filter_serializer = self.filter_serializer_class(data=request.data)
+        filter_serializer = self.filter_serializer_class(data=request.query_params)
         filter_serializer.is_valid(raise_exception=True)
 
-        wallet = self.service.get_wallet(filter_serializer.validated_data["wallet"]["number"])
-        start_date = filter_serializer.validated_data["start_date"]
-        end_date = filter_serializer.validated_data["end_date"]
-
-        filter_data = {
-            "from_wallet": wallet,
-            "to_wallet": wallet,
-            "start_date": start_date,
-            "end_date": end_date,
-        }
-
-        transactions = self.service.transaction_list(filter_data)
+        transactions = self.service.transaction_list(filter_serializer.validated_data)
         serializer = self.serializer_class(transactions, many=True)
+        for transaction in serializer.data:
+            del transaction["to_wallet"]["balance"]
+            if "from_wallet" in transaction and transaction["from_wallet"] is not None:
+                del transaction["from_wallet"]["balance"]
         return Response(data=serializer.data, status=status.HTTP_200_OK)
