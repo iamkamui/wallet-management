@@ -11,7 +11,7 @@ from transaction.enums import TransactionStatus
 class Wallet(models.Model):
     number = models.CharField("wallet number", max_length=12, validators=[MinLengthValidator(12)], primary_key=True)
     user = models.ForeignKey(User, verbose_name="owner", on_delete=models.CASCADE)
-    balance = models.DecimalField("wallet balance", max_digits=10, decimal_places=2)
+    balance = models.DecimalField("wallet balance", max_digits=10, decimal_places=2, default=0)
     created_at = models.DateTimeField("date joined", default=timezone.now)
 
     def save(self, *args: Any, **kwargs: Any) -> None:
