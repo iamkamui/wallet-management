@@ -1,5 +1,6 @@
 from typing import Any
 
+from django.db import IntegrityError, transaction
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -33,8 +34,20 @@ class UserViewSet(viewsets.ViewSet):
         serializer.is_valid(raise_exception=True)
 
         try:
-            self.service.create_user(**serializer.validated_data)
-        except Exception as exp:
+            cpf = serializer.validated_data["cpf"]
+            email = serializer.validated_data["email"]
+            password = serializer.validated_data["password"]
+            preferred_name = serializer.validated_data["preferred_name"]
+            full_name = serializer.validated_data["full_name"]
+            phone_number = serializer.validated_data["phone_number"]
+
+            with transaction.atomic():
+                user = self.service.create_user(cpf, email, password)
+                user_service = self.service(user)
+                user_service.create_profile(preferred_name, full_name, phone_number)
+                user_service.create_wallet()
+        except IntegrityError as exp:
             return Response(data=str(exp), status=status.HTTP_400_BAD_REQUEST)
 
-        return Response(data=serializer.data, status=status.HTTP_201_CREATED)
+        response_data = self.serializer_class(user).data
+        return Response(data=response_data, status=status.HTTP_201_CREATED)
