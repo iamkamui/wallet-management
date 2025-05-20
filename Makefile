@@ -18,3 +18,7 @@ test_all:
 
 shell_plus:
 	docker compose run --rm backend python manage.py shell_plus
+
+initial_migrate:
+	docker compose run --rm backend python manage.py migrate
+	docker compose run --rm backend python manage.py loaddata wallet_management/fixtures/base_data.json

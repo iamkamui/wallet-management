@@ -1,0 +1,360 @@
+[
+  {
+    "model": "authentication.profile",
+    "pk": 1,
+    "fields": {
+      "user": 1,
+      "preferred_name": "Test",
+      "full_name": "User Test da Silva Sauro",
+      "phone_number": "+5511976420841"
+    }
+  },
+  {
+    "model": "authentication.profile",
+    "pk": 2,
+    "fields": {
+      "user": 2,
+      "preferred_name": "Test",
+      "full_name": "Test User Base Sauro da Silva",
+      "phone_number": "+5511936595351"
+    }
+  },
+  {
+    "model": "authentication.user",
+    "pk": 1,
+    "fields": {
+      "password": "pbkdf2_sha256$1000000$KZZeL3QjmsFM9pBAoCNrkQ$ZJA7CpRWe7LbBCa6RlBrq1R4YgMW0Q2imeHRmZ06ffs=",
+      "last_login": "2025-05-20T13:50:27.393Z",
+      "is_superuser": false,
+      "cpf": "29615434876",
+      "email": "base_test_user@test.com",
+      "is_staff": false,
+      "date_joined": "2025-05-20T13:29:35.126Z",
+      "updated_at": "2025-05-20T13:29:35.331Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "authentication.user",
+    "pk": 2,
+    "fields": {
+      "password": "pbkdf2_sha256$1000000$qKiaXLCrlInku4hWaEPzQa$vmCuuxwcvsvuRLSaA6hUDufxSozozg3axTPv0B8dbkQ=",
+      "last_login": null,
+      "is_superuser": false,
+      "cpf": "29107448686",
+      "email": "test_user_base@test.com",
+      "is_staff": false,
+      "date_joined": "2025-05-20T13:31:30.744Z",
+      "updated_at": "2025-05-20T13:31:30.945Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "transaction.wallet",
+    "pk": "255434876174",
+    "fields": {
+      "user": 1,
+      "balance": "3871.30",
+      "created_at": "2025-05-20T13:29:35.333Z"
+    }
+  },
+  {
+    "model": "transaction.wallet",
+    "pk": "257448686174",
+    "fields": {
+      "user": 2,
+      "balance": "2923.70",
+      "created_at": "2025-05-20T13:31:30.947Z"
+    }
+  },
+  {
+    "model": "transaction.transaction",
+    "pk": 1,
+    "fields": {
+      "from_wallet": null,
+      "to_wallet": "255434876174",
+      "amount": "50.00",
+      "status": "003",
+      "requested_by": null,
+      "created_at": "2023-12-20T13:43:53.943Z"
+    }
+  },
+  {
+    "model": "transaction.transaction",
+    "pk": 2,
+    "fields": {
+      "from_wallet": null,
+      "to_wallet": "255434876174",
+      "amount": "50.00",
+      "status": "003",
+      "requested_by": null,
+      "created_at": "2024-07-17T14:26:40.842Z"
+    }
+  },
+  {
+    "model": "transaction.transaction",
+    "pk": 3,
+    "fields": {
+      "from_wallet": null,
+      "to_wallet": "255434876174",
+      "amount": "505.00",
+      "status": "003",
+      "requested_by": null,
+      "created_at": "2024-08-17T14:30:22.722Z"
+    }
+  },
+  {
+    "model": "transaction.transaction",
+    "pk": 4,
+    "fields": {
+      "from_wallet": null,
+      "to_wallet": "255434876174",
+      "amount": "5050.00",
+      "status": "003",
+      "requested_by": null,
+      "created_at": "2024-09-17T14:30:35.573Z"
+    }
+  },
+  {
+    "model": "transaction.transaction",
+    "pk": 5,
+    "fields": {
+      "from_wallet": null,
+      "to_wallet": "255434876174",
+      "amount": "10.00",
+      "status": "003",
+      "requested_by": null,
+      "created_at": "2024-10-17T14:30:44.475Z"
+    }
+  },
+  {
+    "model": "transaction.transaction",
+    "pk": 6,
+    "fields": {
+      "from_wallet": null,
+      "to_wallet": "255434876174",
+      "amount": "1000.00",
+      "status": "003",
+      "requested_by": null,
+      "created_at": "2024-11-17T14:30:55.473Z"
+    }
+  },
+  {
+    "model": "transaction.transaction",
+    "pk": 7,
+    "fields": {
+      "from_wallet": null,
+      "to_wallet": "255434876174",
+      "amount": "10.00",
+      "status": "004",
+      "requested_by": null,
+      "created_at": "2024-11-26T14:31:27.619Z"
+    }
+  },
+  {
+    "model": "transaction.transaction",
+    "pk": 8,
+    "fields": {
+      "from_wallet": null,
+      "to_wallet": "255434876174",
+      "amount": "10.00",
+      "status": "003",
+      "requested_by": null,
+      "created_at": "2024-11-27T14:31:42.859Z"
+    }
+  },
+  {
+    "model": "transaction.transaction",
+    "pk": 9,
+    "fields": {
+      "from_wallet": null,
+      "to_wallet": "255434876174",
+      "amount": "10.00",
+      "status": "003",
+      "requested_by": null,
+      "created_at": "2024-12-20T14:34:03.920Z"
+    }
+  },
+  {
+    "model": "transaction.transaction",
+    "pk": 10,
+    "fields": {
+      "from_wallet": null,
+      "to_wallet": "255434876174",
+      "amount": "100.00",
+      "status": "003",
+      "requested_by": null,
+      "created_at": "2024-12-20T14:34:10.788Z"
+    }
+  },
+  {
+    "model": "transaction.transaction",
+    "pk": 11,
+    "fields": {
+      "from_wallet": "255434876174",
+      "to_wallet": "257448686174",
+      "amount": "10.00",
+      "status": "003",
+      "requested_by": 1,
+      "created_at": "2025-01-20T14:36:39.607Z"
+    }
+  },
+  {
+    "model": "transaction.transaction",
+    "pk": 12,
+    "fields": {
+      "from_wallet": "255434876174",
+      "to_wallet": "257448686174",
+      "amount": "100.00",
+      "status": "003",
+      "requested_by": 1,
+      "created_at": "2025-01-20T14:36:51.730Z"
+    }
+  },
+  {
+    "model": "transaction.transaction",
+    "pk": 13,
+    "fields": {
+      "from_wallet": "255434876174",
+      "to_wallet": "257448686174",
+      "amount": "500.00",
+      "status": "003",
+      "requested_by": 1,
+      "created_at": "2025-02-20T14:37:02.748Z"
+    }
+  },
+  {
+    "model": "transaction.transaction",
+    "pk": 14,
+    "fields": {
+      "from_wallet": "255434876174",
+      "to_wallet": "257448686174",
+      "amount": "30.00",
+      "status": "003",
+      "requested_by": 1,
+      "created_at": "2025-02-20T14:37:20.977Z"
+    }
+  },
+  {
+    "model": "transaction.transaction",
+    "pk": 15,
+    "fields": {
+      "from_wallet": "255434876174",
+      "to_wallet": "257448686174",
+      "amount": "70.00",
+      "status": "003",
+      "requested_by": 1,
+      "created_at": "2025-02-20T14:37:26.508Z"
+    }
+  },
+  {
+    "model": "transaction.transaction",
+    "pk": 16,
+    "fields": {
+      "from_wallet": "255434876174",
+      "to_wallet": "257448686174",
+      "amount": "70.50",
+      "status": "003",
+      "requested_by": 1,
+      "created_at": "2025-03-20T14:37:33.896Z"
+    }
+  },
+  {
+    "model": "transaction.transaction",
+    "pk": 17,
+    "fields": {
+      "from_wallet": "255434876174",
+      "to_wallet": "257448686174",
+      "amount": "10.50",
+      "status": "003",
+      "requested_by": 1,
+      "created_at": "2025-03-20T14:37:39.628Z"
+    }
+  },
+  {
+    "model": "transaction.transaction",
+    "pk": 18,
+    "fields": {
+      "from_wallet": "255434876174",
+      "to_wallet": "257448686174",
+      "amount": "12.50",
+      "status": "003",
+      "requested_by": 1,
+      "created_at": "2025-03-20T14:37:44.111Z"
+    }
+  },
+  {
+    "model": "transaction.transaction",
+    "pk": 19,
+    "fields": {
+      "from_wallet": "255434876174",
+      "to_wallet": "257448686174",
+      "amount": "6000.00",
+      "status": "004",
+      "requested_by": 1,
+      "created_at": "2025-03-20T14:37:58.578Z"
+    }
+  },
+  {
+    "model": "transaction.transaction",
+    "pk": 20,
+    "fields": {
+      "from_wallet": "255434876174",
+      "to_wallet": "257448686174",
+      "amount": "2000.00",
+      "status": "003",
+      "requested_by": 1,
+      "created_at": "2025-04-15T14:38:10.785Z"
+    }
+  },
+  {
+    "model": "transaction.transaction",
+    "pk": 21,
+    "fields": {
+      "from_wallet": "255434876174",
+      "to_wallet": "257448686174",
+      "amount": "10.00",
+      "status": "003",
+      "requested_by": 1,
+      "created_at": "2025-04-16T14:38:23.140Z"
+    }
+  },
+  {
+    "model": "transaction.transaction",
+    "pk": 22,
+    "fields": {
+      "from_wallet": "255434876174",
+      "to_wallet": "257448686174",
+      "amount": "30.00",
+      "status": "003",
+      "requested_by": 1,
+      "created_at": "2025-04-17T14:38:29.760Z"
+    }
+  },
+  {
+    "model": "transaction.transaction",
+    "pk": 23,
+    "fields": {
+      "from_wallet": "255434876174",
+      "to_wallet": "257448686174",
+      "amount": "40.10",
+      "status": "003",
+      "requested_by": 1,
+      "created_at": "2025-04-18T14:42:00.522Z"
+    }
+  },
+  {
+    "model": "transaction.transaction",
+    "pk": 24,
+    "fields": {
+      "from_wallet": "255434876174",
+      "to_wallet": "257448686174",
+      "amount": "40.10",
+      "status": "003",
+      "requested_by": 1,
+      "created_at": "2025-04-19T14:42:02.068Z"
+    }
+  }
+]
