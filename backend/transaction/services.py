@@ -2,6 +2,7 @@ from decimal import Decimal
 from typing import Any
 
 from authentication.models import User
+from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import ValidationError
 from django.db.models import QuerySet
 
@@ -13,7 +14,9 @@ from transaction.models import Transaction, Wallet
 class TransactionServices:
     model = Transaction
 
-    def __init__(self, user: User, to_wallet: Wallet, from_wallet: Wallet | None = None, amount: int = 0) -> None:
+    def __init__(
+        self, user: User | AnonymousUser, to_wallet: Wallet, from_wallet: Wallet | None = None, amount: int = 0
+    ) -> None:
         self._user = user
         self._from_wallet = from_wallet
         self._to_wallet = to_wallet
@@ -21,9 +24,12 @@ class TransactionServices:
         self.transaction = self._create_transaction(self._user, self._to_wallet, self._from_wallet, self._amount)
 
     def _create_transaction(
-        self, user: User, to_wallet: Wallet, from_wallet: Wallet | None = None, amount: int = 0
+        self, user: User | AnonymousUser, to_wallet: Wallet, from_wallet: Wallet | None = None, amount: int = 0
     ) -> Transaction:
         transaction_data = {"from_wallet": from_wallet, "to_wallet": to_wallet, "amount": amount, "requested_by": user}
+
+        if isinstance(user, AnonymousUser):
+            del transaction_data["requested_by"]
 
         if not from_wallet:
             del transaction_data["from_wallet"]

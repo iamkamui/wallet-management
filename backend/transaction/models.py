@@ -52,7 +52,7 @@ class Transaction(models.Model):
     status = models.CharField(
         "transaction status", max_length=3, choices=TransactionStatus, default=TransactionStatus.PENDING
     )
-    requested_by = models.ForeignKey(User, verbose_name="who realized", on_delete=models.CASCADE)
+    requested_by = models.ForeignKey(User, verbose_name="who realized", on_delete=models.CASCADE, null=True, blank=True)
     created_at = models.DateTimeField("date joined", default=timezone.now)
 
     class Meta:
