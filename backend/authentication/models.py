@@ -3,7 +3,7 @@ from typing import Any
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.contrib.auth.models import UserManager as BaseUserManager
-from django.db import models, transaction
+from django.db import models
 from django.utils import timezone
 from phonenumber_field.modelfields import PhoneNumberField
 
@@ -18,47 +18,33 @@ class Profile(models.Model):
 
 
 class UserManager(BaseUserManager["User"]):  # type: ignore
-    @transaction.atomic
-    def _create_user(self, cpf: str, email: str, password: str, **extra_fields: Any) -> "User":
+    def _create_user_object(self, cpf: str, email: str, password: str, **extra_fields: Any) -> "User":
         is_admin = extra_fields.get("admin")
-        if is_admin:
-            extra_fields.setdefault("is_staff", True)
-            extra_fields.setdefault("is_superuser", True)
 
         email = self.normalize_email(email)
         user = self.model(cpf=cpf, email=email)
         user.password = make_password(password)
 
+        if is_admin:
+            user.is_staff = True
+
         user.full_clean()
         user.save(using=self._db)
 
         user.refresh_from_db()
-
-        if not is_admin:
-            preferred_name = extra_fields["preferred_name"]
-            full_name = extra_fields["full_name"]
-            phone_number = extra_fields["phone_number"]
-
-            profile = Profile(preferred_name=preferred_name, full_name=full_name, phone_number=phone_number, user=user)
-
-            profile.full_clean()
-            profile.save()
         return user
 
     def create_user(self, cpf: str, email: str, password: str, **extra_fields: Any) -> "User":  # type: ignore
-        extra_fields.setdefault("is_staff", False)
-        extra_fields.setdefault("is_superuser", False)
-
         if not email:
             raise ValueError("You must have set an email address.")
 
         if not cpf:
             raise ValueError("You must have an valid CPF number.")
 
-        return self._create_user(cpf, email, password, **extra_fields)
+        return self._create_user_object(cpf, email, password, **extra_fields)
 
     def create_superuser(self, cpf: str, email: str, password: str, admin: bool = True, **extra_fields: Any) -> "User":  # type: ignore
-        return self._create_user(cpf, email, password, admin=admin, **extra_fields)
+        return self._create_user_object(cpf, email, password, admin=admin, **extra_fields)
 
 
 class User(AbstractBaseUser, PermissionsMixin):

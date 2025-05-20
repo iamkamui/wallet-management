@@ -17,15 +17,21 @@ class TestUserAPI(APITestCase):
 
     def test_create_user_return_201(self):
         response = self.client.post(self.endpoint, self.payload, format="json")
+        response_data = response.json()
         expected_response = {
             "cpf": "11144477735",
             "email": "admin@fakemail.com",
-            "preferred_name": "Admin",
-            "full_name": "Admin Test Wallet Management",
-            "phone_number": "+5521976514563",
+            "profile": {
+                "preferred_name": "Admin",
+                "full_name": "Admin Test Wallet Management",
+                "phone_number": "+5521976514563",
+            },
         }
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response.json(), expected_response)
+        self.assertEqual(response_data["cpf"], expected_response["cpf"])
+        self.assertEqual(response_data["email"], expected_response["email"])
+        self.assertEqual(response_data["profile"], expected_response["profile"])
+        self.assertIn("wallets", response.json())
 
     def test_create_user_invalid_cpf_return_400(self):
         self.payload["cpf"] = "00000000000"
@@ -33,7 +39,7 @@ class TestUserAPI(APITestCase):
         expected_response = {"cpf": ["Enter a valid CPF number."]}
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.json(), expected_response)
-        
+
         self.payload["cpf"] = "11144477712"
         response = self.client.post(self.endpoint, self.payload, format="json")
         expected_response = {"cpf": ["Enter a valid CPF number."]}
