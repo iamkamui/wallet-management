@@ -31,6 +31,8 @@ THIRD_PARTY_APPS = [
     "rest_framework_simplejwt",
     "django_extensions",
     "django_filters",
+    "drf_spectacular",
+    "drf_spectacular_sidecar",
 ]
 
 INSTALLED_APPS = [
@@ -134,6 +136,7 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+from wallet_management.config.drf_spectacular import *  # noqa
 from wallet_management.config.jwt import *  # noqa
 from wallet_management.config.rest_framework import *  # noqa
 
