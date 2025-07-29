@@ -60,15 +60,12 @@ To achieve all requirements of challenge, i used [DjangoStyleGuide](https://gith
 <!-- GETTING STARTED -->
 ## Getting Started
 
-For this project i'm using ["uv"](https://docs.astral.sh/uv/) for package management, the choice to behind using this package management is for test the performance, complexity and avoid compatibility issues.
+For this project i'm using ["uv"](https://docs.astral.sh/uv/) for package management, the choice behind is for test performance, complexity and avoid compatibility issues.
 
 Feel free for use any package management that is better for you, but for the guide i'll perform with uv.
 
 
 ### Prerequisites
-
-This project uses uv for package management, ad was built in docker environment, make sure that have all prerequisites installed before continue
-
 
 - [uv](https://docs.astral.sh/uv/getting-started/installation/) >= 0.7.5
 - [Docker](https://docs.docker.com/compose/install/) >= 28.1.1
@@ -82,35 +79,31 @@ This project uses uv for package management, ad was built in docker environment,
    ```
 
 2. Install dependencies
-> If you are using uv the virtual environment will be created automaticaly
-
    ```sh
-   uv sync --lock
+   uv sync
    ```
 
-3. Copy and fill in your environment viables
+3. Copy and fill in your environment variables
    ```sh
-   $ cp example.env .env
+   $ cp example.env .env 
    ```
-
 4. Build and run the containers
    ```sh
    docker compose up -d
    ```
 
 5. Activate virtual environment and run the tests
-  * Linux
    ```sh
    source .venv/bin/activate && make test_all
    ```
 
 6. Run migrations and populate with preload data
-> Take a look at `backend/wallet_management/fixtures/base_data.json` to understand what data will be loaded
    ```sh
    make initial_migrate
    ```
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+   > Take a look at `backend/wallet_management/fixtures/base_data.json` to understand what data will be loaded
 
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
 <!-- USAGE EXAMPLES -->
